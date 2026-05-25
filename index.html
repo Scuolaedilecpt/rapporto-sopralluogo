@@ -968,25 +968,7 @@ body {
       </div>
       <div class="card-body">
         <div class="fields-grid">
-          <div class="field-group">
-            <label class="field-label">Indirizzo cantiere<span class="req">*</span></label>
-            <span class="field-note">Solo via/lotto, non inserire comune o civico</span>
-            <div class="via-cantiere-wrap">
-              <input type="text" class="field-input" id="indirizzo_cantiere_input" name="indirizzo_cantiere" placeholder="Via ..." autocomplete="off">
-              <div id="via-padova-dropdown"></div>
-            </div>
-            <div id="quartiere-badge">
-              <div class="q-label">Quartiere di Padova</div>
-              <div class="q-value" id="quartiere-value">—</div>
-              <div class="q-sub" id="quartiere-sub"></div>
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Civico<span class="req">*</span></label>
-            <span class="field-note">Solo numeri, se non disponibile: snc</span>
-            <input type="text" class="field-input" name="civico_cantiere" placeholder="snc">
-          </div>
-          <div class="field-group">
+<div class="field-group">
             <label class="field-label">Comune cantiere<span class="req">*</span></label>
             <select class="field-select" name="comune_cantiere">
               <option value="">— seleziona comune —</option>
@@ -1039,7 +1021,25 @@ body {
               <option>VILLAFRANCA PADOVANA</option><option>VILLANOVA DI CAMPOSAMPIERO</option>
               <option>VO</option><option>-</option>
             </select>
+          </div>          <div class="field-group">
+            <label class="field-label">Indirizzo cantiere<span class="req">*</span></label>
+            <span class="field-note">Solo via/lotto, non inserire comune o civico</span>
+            <div class="via-cantiere-wrap">
+              <input type="text" class="field-input" id="indirizzo_cantiere_input" name="indirizzo_cantiere" placeholder="Via ..." autocomplete="off">
+              <div id="via-padova-dropdown"></div>
+            </div>
+            <div id="quartiere-badge">
+              <div class="q-label">Quartiere di Padova</div>
+              <div class="q-value" id="quartiere-value">—</div>
+              <div class="q-sub" id="quartiere-sub"></div>
+            </div>
           </div>
+          <div class="field-group">
+            <label class="field-label">Civico<span class="req">*</span></label>
+            <span class="field-note">Solo numeri, se non disponibile: snc</span>
+            <input type="text" class="field-input" name="civico_cantiere" placeholder="snc">
+          </div>
+          
           <div class="field-group">
             <label class="field-label">Data prevista ultimazione lavori</label>
             <input type="date" class="field-input" name="data_fine_lavori">
