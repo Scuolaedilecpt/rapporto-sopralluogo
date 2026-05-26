@@ -806,6 +806,31 @@ body {
 .via-cantiere-wrap {
   position: relative;
 }
+
+/* ===== VERIFICA TUTTO ===== */
+.verif-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+  padding: 3px 10px;
+  background: var(--verif);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.85;
+  vertical-align: middle;
+}
+.verif-all-btn:hover { opacity: 1; }
+.sub-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -1229,10 +1254,10 @@ body {
         </div>
 
         <!-- 01.01 Logistica -->
-        <div class="sub-section-title">01.01 Logistica</div>
+                <div class="sub-section-title">01.01 Logistica<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0101"></tbody>
         </table>
@@ -1243,10 +1268,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.02 Igienico sanitari -->
-        <div class="sub-section-title">01.02 Apprestamenti igienico-sanitari e di sicurezza</div>
+                <div class="sub-section-title">01.02 Apprestamenti igienico-sanitari e di sicurezza<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0102"></tbody>
         </table>
@@ -1257,10 +1282,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.03 Impianti elettrici -->
-        <div class="sub-section-title">01.03 Impianti elettrici</div>
+                <div class="sub-section-title">01.03 Impianti elettrici<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0103"></tbody>
         </table>
@@ -1271,10 +1296,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.04 Agibilità -->
-        <div class="sub-section-title">01.04 Agibilità del cantiere</div>
+                <div class="sub-section-title">01.04 Agibilità del cantiere<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0104"></tbody>
         </table>
@@ -1285,10 +1310,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.05 Organizzazione -->
-        <div class="sub-section-title">01.05 Organizzazione del lavoro</div>
+                <div class="sub-section-title">01.05 Organizzazione del lavoro<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0105"></tbody>
         </table>
@@ -1299,10 +1324,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.06 Segnaletica -->
-        <div class="sub-section-title">01.06 Segnaletica</div>
+                <div class="sub-section-title">01.06 Segnaletica<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0106"></tbody>
         </table>
@@ -1313,10 +1338,10 @@ body {
         <div class="section-divider"></div>
 
         <!-- 01.07 Condizioni al contorno -->
-        <div class="sub-section-title">01.07 Condizioni al contorno</div>
+                <div class="sub-section-title">01.07 Condizioni al contorno<button class="verif-all-btn" onclick="verifAllStatic(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
         <table class="checklist-table">
           <thead class="checklist-thead"><tr>
-            <th>Voce</th><th>VERIF.</th><th>NC+</th><th>NC-</th><th>OSS</th><th>NA</th>
+            <th>Voce</th><th colspan="5">Valutazione</th>
           </tr></thead>
           <tbody id="tb-0107"></tbody>
         </table>
@@ -1875,12 +1900,12 @@ function buildChecklistTable(code, voci, noteField) {
     const stateKey = `${key}|${v}`;
     return `<tr>
       <td>${v}</td>
-      <td><div class="toggle-group">
-        <button class="tog verif"  onclick="setTog(this,'${stateKey}','verif')"  title="Verificato">VERIF.</button>
-        <button class="tog ncplus" onclick="setTog(this,'${stateKey}','ncplus')" title="NC Grave">NC+</button>
-        <button class="tog ncminus"onclick="setTog(this,'${stateKey}','ncminus')"title="NC Generico">NC-</button>
-        <button class="tog oss"    onclick="setTog(this,'${stateKey}','oss')"    title="Osservazione">OSS</button>
-        <button class="tog na"     onclick="setTog(this,'${stateKey}','na')"     title="Non applicabile">NA</button>
+      <td><div class="toggle-group" data-key="${stateKey}">
+        <button class="tog verif"  data-val="verif"   title="Verificato">VERIF.</button>
+        <button class="tog ncplus" data-val="ncplus"  title="NC Grave">NC+</button>
+        <button class="tog ncminus"data-val="ncminus" title="NC Generico">NC-</button>
+        <button class="tog oss"    data-val="oss"     title="Osservazione">OSS</button>
+        <button class="tog na"     data-val="na"      title="Non applicabile">NA</button>
       </div></td>
       <td></td><td></td><td></td><td></td>
     </tr>`;
@@ -1896,7 +1921,7 @@ function buildSection(secCode, container) {
     const voci = sections[sname];
     const noteId = `note_${secCode}_${si}`;
     html += `
-      <div class="sub-section-title">${sname}</div>
+      <div class="sub-section-title">${sname}<button class="verif-all-btn" onclick="verifAll(this)" title="Imposta tutto VERIF.">✓ Verifica tutto</button></div>
       <table class="checklist-table">
         <thead class="checklist-thead"><tr>
           <th>Voce</th><th colspan="5">Valutazione</th>
@@ -1905,12 +1930,12 @@ function buildSection(secCode, container) {
           ${voci.map(v => {
             const stateKey = `${secCode}_${si}|${v}`;
             return `<tr><td>${v}</td><td colspan="5">
-              <div class="toggle-group">
-                <button class="tog verif"  onclick="setTog(this,'${stateKey}','verif')"  >VERIF.</button>
-                <button class="tog ncplus" onclick="setTog(this,'${stateKey}','ncplus')" >NC+</button>
-                <button class="tog ncminus"onclick="setTog(this,'${stateKey}','ncminus')">NC-</button>
-                <button class="tog oss"    onclick="setTog(this,'${stateKey}','oss')"    >OSS</button>
-                <button class="tog na"     onclick="setTog(this,'${stateKey}','na')"     >NA</button>
+              <div class="toggle-group" data-key="${stateKey}">
+                <button class="tog verif"  data-val="verif"  >VERIF.</button>
+                <button class="tog ncplus" data-val="ncplus" >NC+</button>
+                <button class="tog ncminus"data-val="ncminus">NC-</button>
+                <button class="tog oss"    data-val="oss"    >OSS</button>
+                <button class="tog na"     data-val="na"     >NA</button>
               </div></td></tr>`;
           }).join('')}
         </tbody>
@@ -1954,12 +1979,12 @@ function init() {
     tb.innerHTML = checklistData[k].map(v => {
       const stateKey = `${k}|${v}`;
       return `<tr><td>${v}</td><td colspan="5">
-        <div class="toggle-group">
-          <button class="tog verif"  onclick="setTog(this,'${stateKey}','verif')"  >VERIF.</button>
-          <button class="tog ncplus" onclick="setTog(this,'${stateKey}','ncplus')" >NC+</button>
-          <button class="tog ncminus"onclick="setTog(this,'${stateKey}','ncminus')">NC-</button>
-          <button class="tog oss"    onclick="setTog(this,'${stateKey}','oss')"    >OSS</button>
-          <button class="tog na"     onclick="setTog(this,'${stateKey}','na')"     >NA</button>
+        <div class="toggle-group" data-key="${stateKey}">
+          <button class="tog verif"  data-val="verif"  >VERIF.</button>
+          <button class="tog ncplus" data-val="ncplus" >NC+</button>
+          <button class="tog ncminus"data-val="ncminus">NC-</button>
+          <button class="tog oss"    data-val="oss"    >OSS</button>
+          <button class="tog na"     data-val="na"     >NA</button>
         </div></td></tr>`;
     }).join('');
   });
@@ -2076,11 +2101,10 @@ function calcolaIPC() {
 
 // ==================== TOGGLE STATES ====================
 function setTog(btn, key, val) {
-  const grp = btn.parentElement;
+  const grp = btn.closest('.toggle-group') || btn.parentElement;
   const allBtns = grp.querySelectorAll('.tog');
   const currentState = togStates[key];
   if (currentState === val) {
-    // deselect
     allBtns.forEach(b => b.classList.remove('active'));
     togStates[key] = null;
   } else {
@@ -2091,6 +2115,17 @@ function setTog(btn, key, val) {
   updateProgress();
   calcolaIPC();
 }
+
+// Event delegation for data-key toggle buttons (avoids apostrophe issues in onclick)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.tog[data-val]');
+  if (!btn) return;
+  const grp = btn.closest('.toggle-group[data-key]');
+  if (!grp) return;
+  const key = grp.dataset.key;
+  const val = btn.dataset.val;
+  setTog(btn, key, val);
+});
 
 // ==================== CHECKBOX ====================
 function syncCheck(input) {
@@ -2826,6 +2861,50 @@ function initViaPadovaAutocomplete() {
 }
 
 // Init all
+
+
+// Verifica tutto per sezioni statiche (01.xx)
+function verifAllStatic(btn) {
+  // Find the table that follows the sub-section-title div
+  const titleDiv = btn.parentElement;
+  let sib = titleDiv.nextElementSibling;
+  let table = null;
+  while (sib) {
+    if (sib.tagName === 'TABLE') { table = sib; break; }
+    sib = sib.nextElementSibling;
+  }
+  if (!table) return;
+  table.querySelectorAll('.toggle-group[data-key]').forEach(function(grp) {
+    const key = grp.dataset.key;
+    grp.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+    const verifBtn = grp.querySelector('.tog.verif');
+    if (verifBtn) verifBtn.classList.add('active');
+    togStates[key] = 'verif';
+  });
+  updateProgress();
+  calcolaIPC();
+}
+
+// Verifica tutto per sezioni dinamiche buildSection (02+)
+function verifAll(btn) {
+  const titleDiv = btn.parentElement;
+  let sib = titleDiv.nextElementSibling;
+  let table = null;
+  while (sib) {
+    if (sib.tagName === 'TABLE') { table = sib; break; }
+    sib = sib.nextElementSibling;
+  }
+  if (!table) return;
+  table.querySelectorAll('.toggle-group[data-key]').forEach(function(grp) {
+    const key = grp.dataset.key;
+    grp.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+    const verifBtn = grp.querySelector('.tog.verif');
+    if (verifBtn) verifBtn.classList.add('active');
+    togStates[key] = 'verif';
+  });
+  updateProgress();
+  calcolaIPC();
+}
 
 // ===== PWA: Service Worker + Install =====
 (function() {
