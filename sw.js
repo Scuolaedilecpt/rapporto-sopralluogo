@@ -1,5 +1,5 @@
 // Service Worker — Rapporto di Sopralluogo CPT Formedil Padova
-const CACHE_NAME = 'sopralluogo-cpt-v2';
+const CACHE_NAME = 'sopralluogo-cpt-v3';
 
 // File da mettere in cache per uso offline
 const STATIC_ASSETS = [
