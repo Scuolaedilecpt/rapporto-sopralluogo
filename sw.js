@@ -1,30 +1,26 @@
 // Service Worker — Rapporto di Sopralluogo CPT Formedil Padova
-const CACHE_NAME = 'sopralluogo-cpt-v3';
+const CACHE_NAME = 'sopralluogo-cpt-v4';
 
-// File da mettere in cache per uso offline
-const STATIC_ASSETS = [
-  './',
-  './index.html',
+// Solo assets pesanti/esterni da cachare
+const PRECACHE_ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
-// Install: pre-carica assets statici
+// Install: pre-carica solo assets secondari (NON index.html)
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      // Cache assets one by one, ignoring failures (fonts external may fail)
-      return Promise.allSettled(
-        STATIC_ASSETS.map(url => cache.add(url).catch(() => {}))
-      );
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.allSettled(
+        PRECACHE_ASSETS.map(url => cache.add(url).catch(() => {}))
+      )
+    ).then(() => self.skipWaiting())
   );
 });
 
-// Activate: rimuovi cache vecchie
+// Activate: rimuovi TUTTE le cache vecchie e prendi controllo subito
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -35,13 +31,27 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch: network-first per richieste al GAS backend, cache-first per assets statici
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Richieste al Google Apps Script: sempre network (no cache)
+  // Google Apps Script: sempre network
   if (url.hostname.includes('script.google.com')) {
     event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // index.html e root: SEMPRE network-first, cache solo come fallback offline
+  if (url.pathname === '/' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then(response => {
+          // Aggiorna la cache con la versione fresca
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request)) // offline fallback
+    );
     return;
   }
 
@@ -61,7 +71,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Tutto il resto: cache-first con fallback network
+  // Tutto il resto (icone, manifest, xlsx): cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
