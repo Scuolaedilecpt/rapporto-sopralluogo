@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset App — Formedil Padova</title>
+<style>
+  body { margin: 0; font-family: sans-serif; background: #1a1a2e; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; box-sizing: border-box; }
+  .box { max-width: 400px; }
+  .logo { font-size: 48px; margin-bottom: 16px; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { opacity: 0.7; font-size: 14px; margin: 0 0 32px; }
+  .btn { background: #e7500f; color: white; border: none; border-radius: 12px; padding: 18px 40px; font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn:disabled { background: #555; cursor: default; }
+  .stato { margin-top: 20px; font-size: 14px; opacity: 0.8; min-height: 24px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">🔄</div>
+  <h1>Aggiorna l'app</h1>
+  <p>Premi il pulsante per cancellare la cache e scaricare l'ultima versione dell'app.</p>
+  <button class="btn" id="btn" onclick="reset()">AGGIORNA ORA</button>
+  <div class="stato" id="stato"></div>
+</div>
+<script>
+async function reset() {
+  const btn = document.getElementById('btn');
+  const stato = document.getElementById('stato');
+  btn.disabled = true;
+  btn.textContent = 'Pulizia in corso...';
+
+  try {
+    // 1. Cancella tutte le cache
+    stato.textContent = '🗑️ Cancello cache...';
+    const cacheKeys = await caches.keys();
+    await Promise.all(cacheKeys.map(k => caches.delete(k)));
+
+    // 2. Deregistra tutti i service worker
+    stato.textContent = '⚙️ Rimuovo service worker...';
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+
+    // 3. Reindirizza all'app con cache-bust
+    stato.textContent = '✅ Fatto! Apertura app...';
+    setTimeout(() => {
+      window.location.href = './index.html?v=' + Date.now();
+    }, 800);
+
+  } catch(err) {
+    stato.textContent = '❌ Errore: ' + err.message;
+    btn.disabled = false;
+    btn.textContent = 'RIPROVA';
+  }
+}
+</script>
+</body>
+</html>
