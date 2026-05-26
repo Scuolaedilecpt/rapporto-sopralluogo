@@ -2540,6 +2540,7 @@ function ripopolaForm(dati) {
   // Scroll in cima
   window.scrollTo({ top: 0, behavior: 'smooth' });
   updateProgress();
+  calcolaIPC();
 }
 
 
@@ -2597,12 +2598,14 @@ function attivaToggleDaImport(dati) {
   Object.keys(togStates).forEach(function(k) { delete togStates[k]; });
 
   // Costruisce mappa: chiave-normalizzata → toggle-group
-  // Usa lo stesso transform dell'export Excel: data-key.replace(/[|.]/g,'_')
+  // Usiamo una normalizzazione super-robusta (solo caratteri alfanumerici minuscoli)
+  // per ignorare qualsiasi discrepanza di punteggiatura (virgolette, parentesi, slash, punti, spazi)
   var grpMap = {};
   document.querySelectorAll('.toggle-group').forEach(function(grp) {
     var dk = grp.dataset.key;
     if (!dk) return;
-    grpMap[dk.replace(/[|.]/g, '_')] = grp;
+    var normDk = dk.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    grpMap[normDk] = grp;
   });
 
   Object.keys(dati).forEach(function(k) {
@@ -2611,9 +2614,12 @@ function attivaToggleDaImport(dati) {
     if (!val) return;
     var cssClass = togLabelMap[val];
     if (!cssClass) return;
-    var inner = k.replace('checklist_', '');
-    var grp = grpMap[inner];
+    
+    // Normalizziamo anche la chiave importata nello stesso modo
+    var normK = k.replace('checklist_', '').toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    var grp = grpMap[normK];
     if (!grp) return;
+    
     grp.querySelectorAll('.tog').forEach(function(t) { t.classList.remove('active'); });
     var target = grp.querySelector('.tog.' + cssClass);
     if (target) {
