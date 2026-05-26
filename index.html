@@ -2592,9 +2592,19 @@ var togLabelMap = { 'VERIF.': 'verif', 'NC+': 'ncplus', 'NC-': 'ncminus', 'OSS':
                     'verif': 'verif', 'ncplus': 'ncplus', 'ncminus': 'ncminus', 'oss': 'oss', 'na': 'na' };
 
 function attivaToggleDaImport(dati) {
-  // calcolaIPC() viene chiamato alla fine
+  // Resetta stato visivo e togStates completamente
   document.querySelectorAll('.tog').forEach(function(t) { t.classList.remove('active'); });
-  for (var sk in togStates) { togStates[sk] = null; }
+  Object.keys(togStates).forEach(function(k) { delete togStates[k]; });
+
+  // Costruisce mappa: chiave-normalizzata → toggle-group
+  // Usa lo stesso transform dell'export Excel: data-key.replace(/[|.]/g,'_')
+  var grpMap = {};
+  document.querySelectorAll('.toggle-group').forEach(function(grp) {
+    var dk = grp.dataset.key;
+    if (!dk) return;
+    grpMap[dk.replace(/[|.]/g, '_')] = grp;
+  });
+
   Object.keys(dati).forEach(function(k) {
     if (k.indexOf('checklist_') !== 0) return;
     var val = String(dati[k] || '').trim();
@@ -2602,21 +2612,14 @@ function attivaToggleDaImport(dati) {
     var cssClass = togLabelMap[val];
     if (!cssClass) return;
     var inner = k.replace('checklist_', '');
-    document.querySelectorAll('tbody tr').forEach(function(tr) {
-      var td = tr.querySelector('td:first-child');
-      if (!td) return;
-      var voceText = td.textContent.trim();
-      if (inner.length > voceText.length && inner.indexOf(voceText) !== -1 && inner[inner.length - voceText.length - 1] === '_') {
-        var grp = tr.querySelector('.toggle-group');
-        if (!grp) return;
-        grp.querySelectorAll('.tog').forEach(function(t) { t.classList.remove('active'); });
-        var target = grp.querySelector('.tog.' + cssClass);
-        if (target) {
-          target.classList.add('active');
-          togStates[grp.dataset.key] = cssClass;
-        }
-      }
-    });
+    var grp = grpMap[inner];
+    if (!grp) return;
+    grp.querySelectorAll('.tog').forEach(function(t) { t.classList.remove('active'); });
+    var target = grp.querySelector('.tog.' + cssClass);
+    if (target) {
+      target.classList.add('active');
+      togStates[grp.dataset.key] = cssClass;
+    }
   });
 }
 
