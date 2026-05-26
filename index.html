@@ -2909,10 +2909,39 @@ function verifAll(btn) {
   // Register service worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js').then(function(reg) {
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(function(reg) {
         console.log('[PWA] Service Worker registrato:', reg.scope);
+
+        // Controlla subito se c'è un aggiornamento
+        reg.update();
+
+        // Quando viene trovata una nuova versione del SW
+        reg.addEventListener('updatefound', function() {
+          var newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function() {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Nuovo SW pronto — forza attivazione immediata
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+
+        // Se già c'è un SW in attesa al caricamento
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+
       }).catch(function(err) {
         console.warn('[PWA] SW registration failed:', err);
+      });
+
+      // Quando il SW cambia controller → ricarica la pagina per prendere i file nuovi
+      var refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
       });
     });
   }
@@ -2993,3 +3022,4 @@ function verifAll(btn) {
 
 </body>
 </html>
+                                                                                        
