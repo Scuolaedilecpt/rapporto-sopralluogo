@@ -1,5 +1,5 @@
 // Service Worker — Rapporto di Sopralluogo CPT Formedil Padova
-const CACHE_NAME = 'sopralluogo-cpt-v4';
+const CACHE_NAME = 'sopralluogo-cpt-v5';
 
 // Solo assets pesanti/esterni da cachare
 const PRECACHE_ASSETS = [
