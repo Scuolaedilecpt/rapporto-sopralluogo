@@ -1,7 +1,6 @@
 // Service Worker — Rapporto di Sopralluogo CPT Formedil Padova
-const CACHE_NAME = 'sopralluogo-cpt-v5';
+const CACHE_NAME = 'sopralluogo-cpt-v6';
 
-// Solo assets pesanti/esterni da cachare
 const PRECACHE_ASSETS = [
   './manifest.json',
   './icon-192.png',
@@ -9,25 +8,32 @@ const PRECACHE_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
-// Install: pre-carica solo assets secondari (NON index.html)
+// Install: pre-carica assets secondari e prendi controllo subito
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
       Promise.allSettled(
         PRECACHE_ASSETS.map(url => cache.add(url).catch(() => {}))
       )
-    ).then(() => self.skipWaiting())
+    ).then(() => self.skipWaiting()) // ← prende controllo immediatamente
   );
 });
 
-// Activate: rimuovi TUTTE le cache vecchie e prendi controllo subito
+// Activate: rimuovi cache vecchie, prendi controllo, ricarica tutte le pagine aperte
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys()
+      .then(keys => Promise.all(
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    ).then(() => self.clients.claim())
+      ))
+      .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ includeUncontrolled: true, type: 'window' }))
+      .then(clients => {
+        clients.forEach(client => {
+          // Forza ricaricamento pagina con nuova versione
+          client.navigate(client.url);
+        });
+      })
   );
 });
 
@@ -40,17 +46,16 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // index.html e root: SEMPRE network-first, cache solo come fallback offline
+  // index.html: SEMPRE network-first, mai cache
   if (url.pathname === '/' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/')) {
     event.respondWith(
       fetch(event.request, { cache: 'no-store' })
         .then(response => {
-          // Aggiorna la cache con la versione fresca
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
           return response;
         })
-        .catch(() => caches.match(event.request)) // offline fallback
+        .catch(() => caches.match(event.request))
     );
     return;
   }
@@ -71,7 +76,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Tutto il resto (icone, manifest, xlsx): cache-first
+  // Tutto il resto: cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
@@ -86,7 +91,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Risponde al comando di aggiornamento immediato inviato dalla pagina
+// Risponde al comando manuale di aggiornamento
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
