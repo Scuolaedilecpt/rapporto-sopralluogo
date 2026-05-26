@@ -1,5 +1,5 @@
 // Service Worker — Rapporto di Sopralluogo CPT Formedil Padova
-const CACHE_NAME = 'sopralluogo-cpt-v6';
+const CACHE_NAME = 'sopralluogo-cpt-v7';
 
 const PRECACHE_ASSETS = [
   './manifest.json',
@@ -8,18 +8,19 @@ const PRECACHE_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
-// Install: pre-carica assets secondari e prendi controllo subito
+// Install: pre-carica assets e skipWaiting immediato
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
       Promise.allSettled(
         PRECACHE_ASSETS.map(url => cache.add(url).catch(() => {}))
       )
-    ).then(() => self.skipWaiting()) // ← prende controllo immediatamente
+    ).then(() => self.skipWaiting())
   );
 });
 
-// Activate: rimuovi cache vecchie, prendi controllo, ricarica tutte le pagine aperte
+// Activate: rimuovi cache vecchie e prendi controllo
+// NON fare client.navigate() qui — ci pensa il controllerchange nella pagina
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -27,26 +28,19 @@ self.addEventListener('activate', event => {
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
-      .then(() => self.clients.matchAll({ includeUncontrolled: true, type: 'window' }))
-      .then(clients => {
-        clients.forEach(client => {
-          // Forza ricaricamento pagina con nuova versione
-          client.navigate(client.url);
-        });
-      })
   );
 });
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Google Apps Script: sempre network
+  // Google Apps Script: sempre network, mai cache
   if (url.hostname.includes('script.google.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // index.html: SEMPRE network-first, mai cache
+  // index.html: network-first, cache solo come fallback offline
   if (url.pathname === '/' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/')) {
     event.respondWith(
       fetch(event.request, { cache: 'no-store' })
@@ -91,7 +85,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Risponde al comando manuale di aggiornamento
+// Risponde al reset manuale dalla pagina
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
