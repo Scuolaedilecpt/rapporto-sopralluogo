@@ -723,22 +723,6 @@ body {
   to   { transform: translateX(-50%) translateY(0);   opacity: 1; }
 }
 /* Indicatore offline */
-#update-banner {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  background: #e7500f;
-  color: white;
-  text-align: center;
-  padding: 12px 16px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  z-index: 9999;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-#update-banner.visible { display: block; }
 #offline-indicator {
   display: none;
   position: fixed;
@@ -2199,7 +2183,7 @@ function updateProgress() {
 document.addEventListener('input', updateProgress);
 
 // ==================== SUBMIT ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSBMvvb3CtMd-5R5Z3HlKzJiLEE1lasNMf0RAIPlElXLZEr1QrjFEVpfjuCLlF2AhIZA/exec'; // ← aggiorna con URL SopralluogoUnificato
+const SCRIPT_URL = 'https://script.google.com/macros/s/INSERISCI_URL_SOPRALLUOGO_UNIFICATO/exec'; // ← aggiorna con URL SopralluogoUnificato
 
 function collectData() {
   const data = {};
@@ -2613,7 +2597,9 @@ function attivaToggleDaImport(dati) {
         var target = grp.querySelector('.tog.' + cssClass);
         if (target) {
           target.classList.add('active');
-          togStates[grp.dataset.key] = cssClass;
+          for (var sk in togStates) {
+            if (sk.split('|').pop() === voceText) { togStates[sk] = cssClass; break; }
+          }
         }
       }
     });
@@ -2920,61 +2906,15 @@ function verifAll(btn) {
   calcolaIPC();
 }
 
-
-// ===== AGGIORNAMENTO APP =====
-function aggiornaApp() {
-  navigator.serviceWorker.getRegistration().then(function(reg) {
-    if (reg && reg.waiting) {
-      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      // Nessun SW in attesa: cancella cache e ricarica
-      caches.keys().then(function(keys) {
-        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-      }).then(function() { window.location.reload(true); });
-    }
-  }).catch(function() { window.location.reload(true); });
-}
-
 // ===== PWA: Service Worker + Install =====
 (function() {
   // Register service worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(function(reg) {
+      navigator.serviceWorker.register('./sw.js').then(function(reg) {
         console.log('[PWA] Service Worker registrato:', reg.scope);
-
-        // Controlla subito aggiornamenti ad ogni caricamento
-        reg.update();
-
-        // Nuovo SW trovato → attivalo subito
-        reg.addEventListener('updatefound', function() {
-          var newWorker = reg.installing;
-          newWorker.addEventListener('statechange', function() {
-            if (newWorker.state === 'installed') {
-              if (navigator.serviceWorker.controller) {
-                // C'è già un SW attivo → mostra banner aggiornamento
-                document.getElementById('update-banner').classList.add('visible');
-              } else {
-                // Prima installazione, nessun SW precedente → ricarica silenziosamente
-                window.location.reload();
-              }
-            }
-          });
-        });
-
-        // SW già in attesa al caricamento pagina → mostra banner
-        if (reg.waiting) {
-          document.getElementById('update-banner').classList.add('visible');
-        }
-
       }).catch(function(err) {
         console.warn('[PWA] SW registration failed:', err);
-      });
-
-      // Quando il SW prende controllo dopo skipWaiting → ricarica
-      var refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
-        if (!refreshing) { refreshing = true; window.location.reload(); }
       });
     });
   }
@@ -3051,9 +2991,7 @@ function aggiornaApp() {
 </div>
 
 <!-- Offline indicator -->
-<div id="update-banner" onclick="aggiornaApp()">🔄 Nuova versione disponibile — tocca per aggiornare</div>
 <div id="offline-indicator">⚠️ Connessione assente — alcune funzioni non disponibili</div>
 
 </body>
 </html>
-                                                                                        
