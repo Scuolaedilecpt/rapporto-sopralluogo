@@ -2597,9 +2597,7 @@ function attivaToggleDaImport(dati) {
         var target = grp.querySelector('.tog.' + cssClass);
         if (target) {
           target.classList.add('active');
-          for (var sk in togStates) {
-            if (sk.split('|').pop() === voceText) { togStates[sk] = cssClass; break; }
-          }
+          togStates[grp.dataset.key] = cssClass;
         }
       }
     });
