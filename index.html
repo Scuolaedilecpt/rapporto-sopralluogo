@@ -2529,6 +2529,10 @@ function ripopolaForm(dati) {
   Object.keys(dati).forEach(function(name) {
     var val = dati[name];
     if (!val && val !== 0) return;
+    // Le voci checklist (checklist_*) sono gestite da attivaToggleDaImport().
+    // Vanno saltate qui: la chiave può contenere virgolette/parentesi/slash
+    // che renderebbero non valido il selettore querySelector.
+    if (name.indexOf('checklist_') === 0) return;
     // Campi normali
     var el = document.querySelector('[name="' + name + '"]');
     if (el) {
