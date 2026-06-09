@@ -1683,9 +1683,9 @@ const checklistData2 = {
     '05.03 Macchine stradali': ['Rullo vibro compattatore','Fresatrice','Vibrofinitrice','Rullo asfalto','Spanditrice per leganti bituminosi','Emulsionatrice'],
   },
   '06': {
-    '06.01 Ponteggi fissi': ['Basette','Impalcati','Parapetti e testate','Ancoraggi','Sottoponte','Deposito materiali su impalcati','Piani di appoggio','Mantovane/graticci','Scale','Spine a verme','Illuminazione (se montano su strada)','Parapetto di sommità','Reti anticaduta (montate in verticale)','Raddoppio dei montanti','Partenze ristrette','Verifica consistenza muraria (prova trazione)','Distanza dal fabbricato','Ponti a sbalzo','Montaggio come da schema tipo (libretto)','Travi carraie','Castelli di tiro'],
+    '06.01 Ponteggi fissi': ['Basette','Impalcati','Parapetti e testate','Ancoraggi','Sottoponte','Deposito materiali su impalcati','Piani di appoggio','Mantovane/graticci','Scale','Spine a verme','Illuminazione (se montano su strada)','Parapetto di sommità','Reti anticaduta (montate in verticali)','Raddoppio dei montanti','Partenze ristrette','Verifica consistenza muraria (prova trazione)','Distanza dal fabbricato','Ponti a sbalzo','Montaggio come da schema tipo (libretto)','Travi carraie','Castelli di tiro'],
     '06.02 Ponteggi sospesi': ['Elementi strutturali','Colonne montanti (Argani)','Impalcati','Parapetti e testate','Ancoraggi','Sottoponte','Delimitazioni a terra','Deposito materiali su impalcati','Piano di appoggio'],
-    '06.03 Ponti su cavalletti': ['Impalcati','Cavalletti','Deposito','Materiali su impalcati','Piani di appoggio'],
+    '06.03 Ponti su cavalletti': ['Impalcati','Cavalletti','Deposito materiali su impalcati','Piani di appoggio'],
     '06.04 Ponti su ruote - trabattelli': ['Ruote','Impalcati','Parapetti e testate','Ancoraggi','Stabilizzatori','Sottoponte','Montaggio conforme al libretto','Deposito materiali su impalcati','Piano di appoggio'],
     '06.05 Altri DPC': ['Reti anticaduta','Mensole su cassero','Parapetti e testate','Dispositivi di protezione da contatto','Copertura ferri'],
   },
@@ -1702,7 +1702,7 @@ const checklistData2 = {
   '08': {
     '08.01 Generale': ['Notifica preliminare e succ. aggiornamenti','Piano di sicurezza e coordinamento (PSC)','Fascicolo dell\'opera','Piano operativo di sicurezza (POS)','DUVRI','Piano di lavoro (rimozione amianto) e notifica','Piano delle demolizioni','Cartello di cantiere','Tesserino di riconoscimento','Autorizzazioni e prescrizioni enti terzi','Piano di emergenza ed evacuazione','Verifica congruenza POS e trasmissione a CSE','Verbale consegna e mantenimento DPI','Eventuale convenzione per uso servizi igienici','Idoneità alla mansione'],
     '08.02 Apparecchi di sollevamento': ['Dichiarazione "CE" di conformità','Libretto di uso e manutenzione','Richiesta di prima verifica (attrezz. alleg. VII)','Richiesta di successive visite periodiche','Documento controllo iniziale (ogni montaggio)','Registro di controllo (verifica trimestrale funi)','Ultimo controllo con esito positivo','Piano di coordinamento gru interferenti','Calcolo del basamento della gru','Relazione geotecnica per calcolo basamento'],
-    '08.03 Macchine e attrezzature (art.71,c4)': ['Dichiarazione "CE" di conformità','Libretto di uso e manutenzione','Interventi di controllo o registro ove necessario','Documento di controllo iniziale (ogni montaggio)','Documento e calcolo macchine non "CE"','Documento controllo iniziale linee vita','Lettera di consegna DPI'],
+    '08.03 Macchine e attrezzature (art.71,c4)': ['Dichiarazione "CE" di conformità dove presente','Libretto di uso e manutenzione','Interventi di controllo o registro ove necessario','Documento di controllo iniziale (ogni montaggio)','Dichiarazione "CE" di conformità','Documento e calcolo macchine non "CE"','Documento controllo iniziale linee vita','Interventi di controllo e/o registro','Lettera di consegna DPI'],
     '08.04 Impianto elettrico e di terra': ['Dichiarazione conformità impianto e mod. trasmissione','Interventi di controllo o registro ove necessario','Calcolo probabilità scariche atmosferiche','Richiesta verifica periodica biennale','Verbali di verifica degli impianti','Marcatura "CE" e libretto quadro ASC'],
     '08.05 Ponteggi': ['Libretto autorizzazione ministeriale','Pi.M.U.S.','Disegno del ponteggio','Progetto (disegno esecutivo e relazione di calcolo)','Controllo iniziale/registro di controllo','Libretto rete parasassi','Idoneità alla mansione'],
   },
@@ -1711,7 +1711,7 @@ const checklistData2 = {
   },
   '10': {
     '10.01 Formazione di base': ['Formazione art.37'],
-    '10.02 Figure di sistema': ['Addetti antincendio','Addetti primo soccorso','Datore di lavoro RSPP','RSPP modulo A','RSPP modulo B','RSPP modulo C','RLS','Preposto','Dirigente','Datore di lavoro - dirigente - preposti (art.97)'],
+    '10.02 Figure di sistema': ['Addetti antincendio','Addetti primo soccorso','Datore di lavoro RSPP','RSPP modulo A','RSPP modulo B','RSPP modulo C','RLS','Preposto','Dirigente','Datore di lavoro-dirigente-preposti (art.97)'],
     '10.03 Formazione/addestramento rischi specifici': ['Sistemi anticaduta - linee vita (DPI 3° cat.)','Uso otoprotettori','Addetti lavori su funi','Montaggio e smontaggio ponteggi','Montaggio e smontaggio trabattelli','Addetti rimozione amianto','Coordinatore operazioni rimozione amianto','Ambienti confinati','Addetto posa segnaletica stradale','PES-PAV-PEI'],
     '10.04 Formazione/addestramento attrezzature/macchine': ['Gru a torre','Autogru','Gru su autocarro','Sollevatori telescopici','Piattaforme di lavoro elevabili','Carrelli elevatori','Macchine movimento terra','Macchine stradali','Patentino macchine complesse','Trattori agricoli'],
   },
@@ -1858,7 +1858,8 @@ function buildImpresaPanel(idx) {
       </div>
       <div class="field-group">
         <label class="field-label">Partita IVA</label>
-        <input type="text" class="field-input" name="piva_${n}" placeholder="P.IVA">
+        <input type="text" class="field-input" name="piva_${n}" placeholder="P.IVA (11 cifre) o CF (16 caratteri)" oninput="validaCFPIVA(this)" maxlength="16" required>
+<div class="cf-feedback" id="fb-piva_${n}"></div>
       </div>
       <div class="field-group">
         <label class="field-label">Attività svolta in cantiere</label>
@@ -1912,6 +1913,17 @@ function buildImpresaPanel(idx) {
     </div>`;
 }
 
+// ==================== HTML ATTRIBUTE ESCAPE ====================
+// Evita troncamenti dei data-key quando la voce contiene virgolette (")
+// es. 08.02/08.03/08.04 [Dichiarazione "CE" di conformità]
+function escAttr(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // ==================== BUILD CHECKLIST TABLE ====================
 function buildChecklistTable(code, voci, noteField) {
   const key = code.replace('.','');
@@ -1919,7 +1931,7 @@ function buildChecklistTable(code, voci, noteField) {
     const stateKey = `${key}|${v}`;
     return `<tr>
       <td>${v}</td>
-      <td><div class="toggle-group" data-key="${stateKey}">
+      <td><div class="toggle-group" data-key="${escAttr(stateKey)}">
         <button class="tog verif"  data-val="verif"   title="Verificato">VERIF.</button>
         <button class="tog ncplus" data-val="ncplus"  title="NC Grave">NC+</button>
         <button class="tog ncminus"data-val="ncminus" title="NC Generico">NC-</button>
@@ -1949,7 +1961,7 @@ function buildSection(secCode, container) {
           ${voci.map(v => {
             const stateKey = `${secCode}_${si}|${v}`;
             return `<tr><td>${v}</td><td colspan="5">
-              <div class="toggle-group" data-key="${stateKey}">
+              <div class="toggle-group" data-key="${escAttr(stateKey)}">
                 <button class="tog verif"  data-val="verif"  >VERIF.</button>
                 <button class="tog ncplus" data-val="ncplus" >NC+</button>
                 <button class="tog ncminus"data-val="ncminus">NC-</button>
@@ -1998,7 +2010,7 @@ function init() {
     tb.innerHTML = checklistData[k].map(v => {
       const stateKey = `${k}|${v}`;
       return `<tr><td>${v}</td><td colspan="5">
-        <div class="toggle-group" data-key="${stateKey}">
+        <div class="toggle-group" data-key="${escAttr(stateKey)}">
           <button class="tog verif"  data-val="verif"  >VERIF.</button>
           <button class="tog ncplus" data-val="ncplus" >NC+</button>
           <button class="tog ncminus"data-val="ncminus">NC-</button>
@@ -2254,6 +2266,40 @@ async function submitForm() {
   const email = document.querySelector('[name="email"]').value;
   if (!email) { alert('Inserire l\'email del tecnico!'); return; }
 
+  // ── Validazione Partita IVA / Codice Fiscale imprese ──────────
+  // Impresa 1 sempre obbligatoria; imprese 2-5 obbligatorie se è
+  // stata indicata la Ragione Sociale. Il valore deve essere una
+  // P.IVA (11 cifre) oppure un CF (16 caratteri).
+  for (var ni = 1; ni <= 5; ni++) {
+    var elPiva = document.querySelector('[name="piva_' + ni + '"]');
+    if (!elPiva) continue;
+    var elRag = document.querySelector('[name="ragione_' + ni + '"]');
+    var ragVal = elRag ? elRag.value.trim() : '';
+    var pivaVal = elPiva.value.trim().toUpperCase();
+    var impresaAttiva = (ni === 1) || ragVal !== '' || pivaVal !== '';
+    if (!impresaAttiva) continue;
+    if (pivaVal === '') {
+      alert('Partita IVA mancante per l\'Impresa ' + ni + '.\nInserire una P.IVA (11 cifre) o un Codice Fiscale (16 caratteri).');
+      var p1 = document.getElementById('imp-panel-' + (ni - 1)); if (p1) { document.querySelectorAll('.impresa-panel').forEach(function(p){p.classList.remove('active');}); p1.classList.add('active'); }
+      elPiva.focus();
+      return;
+    }
+    if (!isPivaCfValido(pivaVal)) {
+      alert('Partita IVA / Codice Fiscale non valido per l\'Impresa ' + ni + ': "' + pivaVal + '".\nDeve essere una P.IVA di 11 cifre oppure un CF di 16 caratteri.');
+      var p2 = document.getElementById('imp-panel-' + (ni - 1)); if (p2) { document.querySelectorAll('.impresa-panel').forEach(function(p){p.classList.remove('active');}); p2.classList.add('active'); }
+      elPiva.focus();
+      return;
+    }
+  }
+
+  // ── Validazione RLST (affiancamento) obbligatoria ─────────────
+  var rlstSel = document.querySelector('[name="rlst"]:checked');
+  if (!rlstSel) {
+    alert('Indicare se la visita è in affiancamento con RLST (Sì / No).');
+    var rg = document.getElementById('rlst-group'); if (rg) rg.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Invio in corso...';
   spinner.style.display = 'block';
@@ -2379,6 +2425,14 @@ function removeFoto(e, inputId, previewId) {
 
 
 // ========== VALIDAZIONE CF / P.IVA ==========
+// Verifica formato: P.IVA = 11 cifre numeriche; CF = 16 caratteri (pattern)
+function isPivaCfValido(val) {
+  val = String(val).trim().toUpperCase();
+  if (/^\d{11}$/.test(val)) return true;                                  // Partita IVA
+  if (/^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/.test(val)) return true;  // Codice Fiscale
+  return false;
+}
+
 function validaCFPIVA(input) {
   var val = input.value.trim().toUpperCase();
   input.value = val;
