@@ -2285,6 +2285,15 @@ async function submitForm() {
   const email = document.querySelector('[name="email"]').value;
   if (!email) { alert('Inserire l\'email del tecnico!'); return; }
 
+  // ── Impresa 1 (principale): Ragione Sociale sempre obbligatoria ──
+  var elRag1 = document.querySelector('[name="ragione_1"]');
+  if (!elRag1 || elRag1.value.trim() === '') {
+    alert('Inserire la Ragione Sociale dell\'Impresa 1 (principale).');
+    var pr1 = document.getElementById('imp-panel-0'); if (pr1) { document.querySelectorAll('.impresa-panel').forEach(function(p){p.classList.remove('active');}); pr1.classList.add('active'); }
+    if (elRag1) elRag1.focus();
+    return;
+  }
+
   // ── Validazione Partita IVA / Codice Fiscale imprese ──────────
   // Impresa 1 sempre obbligatoria; imprese 2-5 obbligatorie se è
   // stata indicata la Ragione Sociale. Il valore deve essere una
@@ -2311,11 +2320,54 @@ async function submitForm() {
     }
   }
 
+  // ── Se è indicato il Coordinatore per l'esecuzione, E-mail obbligatoria ──
+  var elCse = document.querySelector('[name="cse"]');
+  if (elCse && elCse.value.trim() !== '') {
+    var elEmailCse = document.querySelector('[name="email_cse"]');
+    var emCse = elEmailCse ? elEmailCse.value.trim() : '';
+    if (emCse === '' || emCse.indexOf('@') === -1) {
+      alert('È stato indicato il Coordinatore per l\'esecuzione: inserire una E-mail coordinatore valida.');
+      if (elEmailCse) { elEmailCse.scrollIntoView({behavior:'smooth', block:'center'}); elEmailCse.focus(); }
+      return;
+    }
+  }
+
   // ── Validazione RLST (affiancamento) obbligatoria ─────────────
   var rlstSel = document.querySelector('[name="rlst"]:checked');
   if (!rlstSel) {
     alert('Indicare se la visita è in affiancamento con RLST (Sì / No).');
     var rg = document.getElementById('rlst-group'); if (rg) rg.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  // ── Note obbligatorie per le sezioni con NC+/NC-/OSS ──────────
+  var noteRichieste = {};
+  Object.keys(togStates).forEach(function(k) {
+    var v = togStates[k];
+    if (v === 'ncplus' || v === 'ncminus' || v === 'oss') {
+      var prefix = k.split('|')[0];
+      var noteName = 'note_' + prefix;
+      if (!(noteName in noteRichieste)) noteRichieste[noteName] = sezioneLabelDaPrefix(prefix);
+    }
+  });
+  var noteMancanti = [];
+  Object.keys(noteRichieste).forEach(function(noteName) {
+    var ta = document.querySelector('[name="' + noteName + '"]');
+    if (!ta || ta.value.trim() === '') noteMancanti.push({ label: noteRichieste[noteName], el: ta });
+  });
+  if (noteMancanti.length) {
+    noteMancanti.sort(function(a, b) { return a.label < b.label ? -1 : 1; });
+    alert('Le seguenti sezioni presentano NC+ / NC- / OSS e richiedono la compilazione della Nota:\n\n' +
+          noteMancanti.map(function(s) { return '• ' + s.label; }).join('\n'));
+    if (noteMancanti[0].el) { noteMancanti[0].el.scrollIntoView({behavior:'smooth', block:'center'}); noteMancanti[0].el.focus(); }
+    return;
+  }
+
+  // ── Foto Privacy obbligatoria ─────────────────────────────────
+  var fpInput = document.getElementById('foto-privacy');
+  if (!fpInput || !fpInput.files || fpInput.files.length === 0) {
+    alert('La foto della Privacy è obbligatoria: caricala prima di inviare il rapporto.');
+    if (fpInput) fpInput.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
 
@@ -2450,6 +2502,17 @@ function isPivaCfValido(val) {
   if (/^\d{11}$/.test(val)) return true;                                  // Partita IVA
   if (/^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/.test(val)) return true;  // Codice Fiscale
   return false;
+}
+
+// Dal prefisso del data-key di un toggle ricava l'etichetta sezione leggibile.
+// Sez. 01: prefisso a 4 cifre "0103" -> "01.03"
+// Sez. 02-10: prefisso "06_2" (secCode 06, sottosezione indice 2) -> "06.03"
+// e restituisce anche il nome del campo nota associato.
+function sezioneLabelDaPrefix(prefix) {
+  if (/^\d{4}$/.test(prefix)) return prefix.slice(0,2) + '.' + prefix.slice(2);
+  var m = prefix.match(/^(\d{2})_(\d+)$/);
+  if (m) return m[1] + '.' + ('0' + (parseInt(m[2],10) + 1)).slice(-2);
+  return prefix;
 }
 
 function validaCFPIVA(input) {
