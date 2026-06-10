@@ -632,28 +632,14 @@ body {
   /* Evita lo zoom automatico di iOS al focus: input >= 16px */
   .field-input, .field-select, .field-textarea, .note-inline { font-size: 16px; }
 
-  /* Checklist a "scheda": voce sopra, pulsanti di valutazione a tutta
-     larghezza sotto, così sono comodi da toccare */
-  .checklist-table, .checklist-table tbody, .checklist-table tr, .checklist-table td {
-    display: block; width: 100%; box-sizing: border-box;
-  }
-  .checklist-table thead { display: none; }
-  .checklist-table tr {
-    border: 1px solid #e3e6ea; border-radius: 8px;
-    margin-bottom: 8px; padding: 8px;
-  }
-  .checklist-table td:first-child {
-    font-weight: 600; padding: 0 0 6px; font-size: 14px;
-  }
-  .toggle-group { gap: 5px; justify-content: space-between; }
-  .toggle-group .tog { flex: 1; padding: 9px 2px; font-size: 12px; min-height: 38px; }
-
   /* Tap target più ampi per radio, checkbox e certificazioni */
   .radio-btn, .checkbox-item { padding: 9px 12px; }
   .cert-chip { padding: 8px 12px; }
 
   /* Pulsante invio più comodo */
   .btn-submit { font-size: 16px; padding: 14px; }
+
+  /* NB: la checklist mantiene il layout compatto originale (più leggibile su cell) */
 }
 
 /* ===== AUTOCOMPLETE COMUNE ITALIA ===== */
