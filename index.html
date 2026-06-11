@@ -3206,8 +3206,131 @@ function aggiornaApp() {
 <div id="update-banner" onclick="aggiornaApp()">🔄 Nuova versione disponibile — tocca per aggiornare</div>
 <div id="offline-indicator">⚠️ Connessione assente — alcune funzioni non disponibili</div>
 
-<!-- Assistente Tecnico (chatbot di supporto) -->
-<script src="assistente-tecnico.js"></script>
+<!-- Assistente Tecnico (chatbot di supporto) — inline per indipendenza dal deploy -->
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    SUPABASE_URL: "https://qcvwrgjldbdoxcfdsvkq.supabase.co",
+    SUPABASE_ANON_KEY: "sb_publishable_-kqDtjogVmbMFM-9TDSOAA_lbrd7zSk",
+    FUNCTION_NAME: "assistente-tecnico",
+  };
+  let sessionId = localStorage.getItem("assistente_session_id");
+  if (!sessionId) {
+    sessionId = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem("assistente_session_id", sessionId);
+  }
+  const style = document.createElement("style");
+  style.textContent = `
+    .at-fab { position: fixed; bottom: 20px; right: 20px; z-index: 9998; width: 56px; height: 56px; border-radius: 50%; background: #E7500F; color: #fff; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(231,80,15,0.4); display: flex; align-items: center; justify-content: center; font-family: 'Barlow', sans-serif; transition: transform 0.2s; }
+    .at-fab:hover { transform: scale(1.05); }
+    .at-fab svg { width: 28px; height: 28px; }
+    .at-panel { position: fixed; bottom: 90px; right: 20px; z-index: 9999; width: 380px; max-width: calc(100vw - 40px); height: 560px; max-height: calc(100vh - 120px); background: #fff; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.22); display: none; flex-direction: column; font-family: 'Barlow', sans-serif; color: #2c3038; overflow: hidden; }
+    .at-panel.open { display: flex; }
+    .at-header { background: #565C66; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+    .at-header h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 0.4px; flex: 1; margin: 0; }
+    .at-header p { font-size: 11px; opacity: 0.75; margin: 0; }
+    .at-close { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1; }
+    .at-messages { flex: 1; overflow-y: auto; padding: 14px; background: #f4f5f7; display: flex; flex-direction: column; gap: 10px; }
+    .at-msg { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 14px; line-height: 1.45; word-wrap: break-word; white-space: pre-wrap; }
+    .at-msg.user { align-self: flex-end; background: #E7500F; color: #fff; border-bottom-right-radius: 4px; }
+    .at-msg.bot { align-self: flex-start; background: #fff; color: #2c3038; border: 1px solid #e8eaed; border-bottom-left-radius: 4px; }
+    .at-msg.bot.review { border-left: 3px solid #f9a825; }
+    .at-sources { font-size: 11px; color: #565C66; margin-top: 6px; padding-top: 6px; border-top: 1px solid #e8eaed; }
+    .at-loading { align-self: flex-start; color: #8a9099; font-style: italic; font-size: 13px; padding: 8px 12px; }
+    .at-input-area { padding: 10px; background: #fff; border-top: 1px solid #e8eaed; display: flex; gap: 8px; }
+    .at-input { flex: 1; padding: 10px 12px; border: 1px solid #d0d4da; border-radius: 10px; font-family: inherit; font-size: 14px; resize: none; max-height: 100px; min-height: 40px; outline: none; }
+    .at-input:focus { border-color: #E7500F; }
+    .at-send { background: #E7500F; color: #fff; border: none; border-radius: 10px; padding: 0 16px; cursor: pointer; font-family: inherit; font-weight: 600; transition: background 0.2s; }
+    .at-send:hover:not(:disabled) { background: #c04008; }
+    .at-send:disabled { background: #d0d4da; cursor: not-allowed; }
+    .at-hint { font-size: 11px; color: #8a9099; text-align: center; padding: 6px 12px; background: #f4f5f7; border-top: 1px solid #e8eaed; }
+    @media (max-width: 480px) { .at-panel { right: 10px; bottom: 80px; width: calc(100vw - 20px); height: calc(100vh - 100px); } }
+  `;
+  document.head.appendChild(style);
+  const fab = document.createElement("button");
+  fab.className = "at-fab";
+  fab.title = "Assistente Tecnico";
+  fab.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+  const panel = document.createElement("div");
+  panel.className = "at-panel";
+  panel.innerHTML = `<div class="at-header"><div style="flex:1"><h3>Assistente Tecnico</h3><p>Formedil Padova — Area Sicurezza</p></div><button class="at-close" aria-label="Chiudi">&times;</button></div><div class="at-messages" id="at-messages"></div><div class="at-input-area"><textarea class="at-input" id="at-input" placeholder="Scrivi la tua domanda..." rows="1"></textarea><button class="at-send" id="at-send">Invia</button></div><div class="at-hint">Le risposte si basano sulla documentazione interna. Verifica sempre le fonti citate.</div>`;
+  document.body.appendChild(fab);
+  document.body.appendChild(panel);
+  const messagesEl = panel.querySelector("#at-messages");
+  const inputEl = panel.querySelector("#at-input");
+  const sendBtn = panel.querySelector("#at-send");
+  const closeBtn = panel.querySelector(".at-close");
+  function addUserMessage(text) {
+    const el = document.createElement("div");
+    el.className = "at-msg user";
+    el.textContent = text;
+    messagesEl.appendChild(el);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  function addBotMessage(text, sources, needsReview) {
+    const el = document.createElement("div");
+    el.className = "at-msg bot" + (needsReview ? " review" : "");
+    el.textContent = text;
+    if (sources && sources.length) {
+      const src = document.createElement("div");
+      src.className = "at-sources";
+      const uniq = [...new Set(sources.map(s => s.title || s.source))];
+      src.textContent = "Fonti: " + uniq.join(" · ");
+      el.appendChild(src);
+    }
+    messagesEl.appendChild(el);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  addBotMessage("Ciao, sono l'Assistente Tecnico. Posso aiutarti con l'uso della PWA, la compilazione della scheda di sopralluogo e le procedure interne. Cosa ti serve?", [], false);
+  fab.addEventListener("click", () => {
+    panel.classList.toggle("open");
+    if (panel.classList.contains("open")) inputEl.focus();
+  });
+  closeBtn.addEventListener("click", () => panel.classList.remove("open"));
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "40px";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
+  });
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  sendBtn.addEventListener("click", send);
+  async function send() {
+    const question = inputEl.value.trim();
+    if (!question) return;
+    addUserMessage(question);
+    inputEl.value = "";
+    inputEl.style.height = "40px";
+    sendBtn.disabled = true;
+    const loadingEl = document.createElement("div");
+    loadingEl.className = "at-loading";
+    loadingEl.textContent = "Sto cercando nella documentazione...";
+    messagesEl.appendChild(loadingEl);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    try {
+      const res = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/${CONFIG.FUNCTION_NAME}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": CONFIG.SUPABASE_ANON_KEY, "Authorization": `Bearer ${CONFIG.SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ question, session_id: sessionId, tecnico: localStorage.getItem("tecnico_nome") || null }),
+      });
+      loadingEl.remove();
+      if (!res.ok) {
+        const errText = await res.text();
+        addBotMessage(`Errore (${res.status}): ${errText}`, [], true);
+        return;
+      }
+      const data = await res.json();
+      addBotMessage(data.answer, data.sources || [], data.needs_review);
+    } catch (err) {
+      loadingEl.remove();
+      addBotMessage("Errore di connessione: " + err.message, [], true);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+})();
+</script>
 
 </body>
 </html>
