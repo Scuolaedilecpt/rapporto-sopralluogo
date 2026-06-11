@@ -3271,7 +3271,19 @@ function aggiornaApp() {
   function addBotMessage(text, sources, needsReview) {
     const el = document.createElement("div");
     el.className = "at-msg bot" + (needsReview ? " review" : "");
-    el.textContent = text;
+    // Rende cliccabili i link http(s) senza usare innerHTML (anti-XSS)
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    let last = 0; let m;
+    while ((m = urlRegex.exec(text)) !== null) {
+      if (m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const a = document.createElement("a");
+      a.href = m[1]; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.style.color = "#E7500F"; a.style.textDecoration = "underline";
+      a.textContent = m[1];
+      el.appendChild(a);
+      last = m.index + m[1].length;
+    }
+    if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
     if (sources && sources.length) {
       const src = document.createElement("div");
       src.className = "at-sources";
