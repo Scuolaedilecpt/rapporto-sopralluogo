@@ -2419,56 +2419,123 @@ async function submitForm() {
   // Tenta salvataggio Excel automatico
   try { esportaExcel(payload); } catch(exErr) { console.warn("Export Excel auto fallito:", exErr); }
 
-  try {
-    {
-      // FASE 1: invia dati testuali (senza foto — limite 32KB Apps Script)
-      var params = new URLSearchParams();
-      params.append('data', JSON.stringify(payload));
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      });
+  var fotoArr = [fotoPrivacyData, fotoCantiere1Data, fotoCantiere2Data];
 
-      // FASE 2: invia foto separatamente (solo se presenti)
-      // Ogni foto viene inviata in una chiamata dedicata con il codice cantiere
-      var codice = payload['codice_cantiere'] || 'cantiere';
-      var dataSop = payload['data_sopralluogo'] || '';
-      var fotoPayloads = [
-        { foto: fotoPrivacyData,   nome: 'foto_privacy',   file: 'Privacy_'       + codice + '_' + dataSop + '.jpg' },
-        { foto: fotoCantiere1Data, nome: 'foto_cantiere1', file: 'FotoCantiere1_' + codice + '_' + dataSop + '.jpg' },
-        { foto: fotoCantiere2Data, nome: 'foto_cantiere2', file: 'FotoCantiere2_' + codice + '_' + dataSop + '.jpg' }
-      ];
-      for (var fi = 0; fi < fotoPayloads.length; fi++) {
-        if (fotoPayloads[fi].foto && fotoPayloads[fi].foto.length > 100) {
-          var fParams = new URLSearchParams();
-          fParams.append('tipo', 'foto');
-          fParams.append('campo', fotoPayloads[fi].nome);
-          fParams.append('nomeFile', fotoPayloads[fi].file);
-          fParams.append('codice', codice);
-          fParams.append('base64', fotoPayloads[fi].foto);
-          await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: fParams.toString(),
-          });
-        }
-      }
-      spinner.style.display = 'none';
-      successMsg.style.display = 'block';
-      btn.textContent = '✓ INVIATO';
-      btn.style.background = 'var(--verde)';
-      document.getElementById('btn-salva-excel').style.display = 'inline-block';
-    }
+  try {
+    await inviaAlServer(payload, fotoArr);
+    spinner.style.display = 'none';
+    successMsg.style.display = 'block';
+    btn.textContent = '✓ INVIATO';
+    btn.style.background = 'var(--verde)';
+    document.getElementById('btn-salva-excel').style.display = 'inline-block';
   } catch(err) {
     spinner.style.display = 'none';
     btn.disabled = false;
     btn.textContent = '▶ INVIA RAPPORTO DI SOPRALLUOGO';
-    alert('Errore invio: ' + err.message);
+    // Salva in coda locale per reinvio automatico appena torna la connessione
+    var salvato = salvaInCodaOffline(payload, fotoArr);
+    if (salvato) {
+      alert('Connessione assente o instabile: invio non riuscito.\n\n' +
+            'Il rapporto è stato SALVATO sul dispositivo e verrà reinviato ' +
+            'automaticamente appena torna la connessione (tieni aperta la app).\n\n' +
+            'Dettaglio tecnico: ' + err.message);
+    } else {
+      alert('Errore invio: ' + err.message + '\n\n' +
+            'Non è stato possibile salvare il rapporto in locale (memoria piena?). ' +
+            'Usa il bottone SALVA EXCEL e riprova l\'invio appena hai connessione.');
+    }
   }
 }
+
+// ==================== INVIO AL SERVER (riutilizzabile) ====================
+async function inviaAlServer(payload, fotoArr) {
+  // FASE 1: invia dati testuali (senza foto — limite 32KB Apps Script)
+  var params = new URLSearchParams();
+  params.append('data', JSON.stringify(payload));
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString(),
+  });
+
+  // FASE 2: invia foto separatamente (solo se presenti)
+  var codice = payload['codice_cantiere'] || 'cantiere';
+  var dataSop = payload['data_sopralluogo'] || '';
+  var fotoPayloads = [
+    { foto: fotoArr[0], nome: 'foto_privacy',   file: 'Privacy_'       + codice + '_' + dataSop + '.jpg' },
+    { foto: fotoArr[1], nome: 'foto_cantiere1', file: 'FotoCantiere1_' + codice + '_' + dataSop + '.jpg' },
+    { foto: fotoArr[2], nome: 'foto_cantiere2', file: 'FotoCantiere2_' + codice + '_' + dataSop + '.jpg' }
+  ];
+  for (var fi = 0; fi < fotoPayloads.length; fi++) {
+    if (fotoPayloads[fi].foto && fotoPayloads[fi].foto.length > 100) {
+      var fParams = new URLSearchParams();
+      fParams.append('tipo', 'foto');
+      fParams.append('campo', fotoPayloads[fi].nome);
+      fParams.append('nomeFile', fotoPayloads[fi].file);
+      fParams.append('codice', codice);
+      fParams.append('base64', fotoPayloads[fi].foto);
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: fParams.toString(),
+      });
+    }
+  }
+}
+
+// ==================== CODA OFFLINE ====================
+var CODA_KEY = 'sopralluogo_coda_offline';
+var _reinvioInCorso = false;
+
+function salvaInCodaOffline(payload, fotoArr) {
+  try {
+    var coda = JSON.parse(localStorage.getItem(CODA_KEY) || '[]');
+    var voce = { ts: Date.now(), payload: payload, foto: fotoArr };
+    try {
+      coda.push(voce);
+      localStorage.setItem(CODA_KEY, JSON.stringify(coda));
+    } catch(eQuota) {
+      // Foto troppo grandi per localStorage: salva almeno i dati testuali
+      coda.pop();
+      voce.foto = ['', '', ''];
+      voce.fotoPerse = true;
+      coda.push(voce);
+      localStorage.setItem(CODA_KEY, JSON.stringify(coda));
+    }
+    return true;
+  } catch(e) {
+    console.warn('Coda offline: salvataggio fallito', e);
+    return false;
+  }
+}
+
+async function reinviaCodaOffline() {
+  if (_reinvioInCorso || !navigator.onLine) return;
+  var coda;
+  try { coda = JSON.parse(localStorage.getItem(CODA_KEY) || '[]'); } catch(e) { return; }
+  if (!coda.length) return;
+  _reinvioInCorso = true;
+  var rimasti = [];
+  for (var i = 0; i < coda.length; i++) {
+    try {
+      await inviaAlServer(coda[i].payload, coda[i].foto || ['', '', '']);
+    } catch(e) {
+      rimasti.push(coda[i]); // riprova più tardi
+    }
+  }
+  localStorage.setItem(CODA_KEY, JSON.stringify(rimasti));
+  _reinvioInCorso = false;
+  if (rimasti.length < coda.length) {
+    var inviati = coda.length - rimasti.length;
+    alert('✓ ' + inviati + ' rapporto/i salvato/i offline ' +
+          (rimasti.length ? 'parzialmente reinviati' : 'reinviati con successo') + '.');
+  }
+}
+
+window.addEventListener('online', function() { setTimeout(reinviaCodaOffline, 2000); });
+window.addEventListener('load',   function() { setTimeout(reinviaCodaOffline, 5000); });
 
 
 
