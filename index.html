@@ -1024,7 +1024,8 @@ body {
         <div class="field-group">
           <label class="field-label">Codice univoco cantiere<span class="req">*</span></label>
           <span class="field-note">Es. SR-basilicata-10-scu — vedere istruzioni incarico mensile</span>
-          <input type="text" class="field-input" name="codice_cantiere" placeholder="XX-nomestrada-civico-imp">
+          <input type="text" class="field-input" name="codice_cantiere" placeholder="XX-nomestrada-civico-imp" oninput="noLeadingSpace(this)" onblur="noLeadingSpace(this, true)" onpaste="setTimeout(function(){noLeadingSpace(document.querySelector('input[name=codice_cantiere]'));},0)">
+          <div class="cf-feedback cf-err" id="fb-codice_cantiere" style="display:none">⚠ Spazio iniziale rimosso automaticamente</div>
         </div>
       </div>
     </div>
@@ -2587,6 +2588,31 @@ function sezioneLabelDaPrefix(prefix) {
   var m = prefix.match(/^(\d{2})_(\d+)$/);
   if (m) return m[1] + '.' + ('0' + (parseInt(m[2],10) + 1)).slice(-2);
   return prefix;
+}
+
+// Impedisce spazi iniziali nel Codice univoco cantiere:
+// rimuove automaticamente eventuali spazi all'inizio e mostra un avviso.
+function noLeadingSpace(input, isBlur) {
+  if (!input) return;
+  var original = input.value;
+  var cleaned = original.replace(/^\s+/, '');
+  var fb = document.getElementById('fb-' + input.name);
+  if (cleaned !== original) {
+    var pos = input.selectionStart;
+    input.value = cleaned;
+    try { input.setSelectionRange(Math.max(0, pos - (original.length - cleaned.length)), Math.max(0, pos - (original.length - cleaned.length))); } catch(e) {}
+    if (fb) {
+      fb.style.display = 'block';
+      if (!input.dataset.spaceAlerted) {
+        input.dataset.spaceAlerted = '1';
+        alert('⚠ Attenzione: il Codice univoco cantiere non può iniziare con uno spazio.\nLo spazio iniziale è stato rimosso automaticamente.');
+      }
+      clearTimeout(input._fbTimer);
+      input._fbTimer = setTimeout(function(){ fb.style.display = 'none'; input.dataset.spaceAlerted = ''; }, 6000);
+    }
+  } else if (isBlur && fb) {
+    fb.style.display = 'none';
+  }
 }
 
 function validaCFPIVA(input) {
