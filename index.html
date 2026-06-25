@@ -1898,7 +1898,7 @@ function buildImpresaPanel(idx) {
         <input type="number" class="field-input" name="ndip_${n}" placeholder="0" min="0">
       </div>
       <div class="field-group">
-        <label class="field-label">E-mail impresa<span class="req">*</span></label>
+        <label class="field-label">E-mail impresa${n===1?'<span class="req">*</span>':''}</label>
         <input type="email" class="field-input" name="email_imp_${n}" placeholder="email@...">
       </div>
       <div class="field-group">
@@ -2292,6 +2292,17 @@ async function submitForm() {
     alert('Inserire la Ragione Sociale dell\'Impresa 1 (principale).');
     var pr1 = document.getElementById('imp-panel-0'); if (pr1) { document.querySelectorAll('.impresa-panel').forEach(function(p){p.classList.remove('active');}); pr1.classList.add('active'); }
     if (elRag1) elRag1.focus();
+    return;
+  }
+
+  // ── Impresa 1 (principale): E-mail obbligatoria ──────────────
+  // Solo per la prima impresa; per le imprese 2-5 l'e-mail è facoltativa.
+  var elEmailImp1 = document.querySelector('[name="email_imp_1"]');
+  var emImp1 = elEmailImp1 ? elEmailImp1.value.trim() : '';
+  if (emImp1 === '' || emImp1.indexOf('@') === -1) {
+    alert('Inserire una E-mail valida per l\'Impresa 1 (principale).');
+    var pe1 = document.getElementById('imp-panel-0'); if (pe1) { document.querySelectorAll('.impresa-panel').forEach(function(p){p.classList.remove('active');}); pe1.classList.add('active'); }
+    if (elEmailImp1) { elEmailImp1.scrollIntoView({behavior:'smooth', block:'center'}); elEmailImp1.focus(); }
     return;
   }
 
